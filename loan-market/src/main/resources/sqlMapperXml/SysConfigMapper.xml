@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.cs.mapper.system.SysConfigMapper">
+    <parameterMap id="SysConfigInfoParam" type="com.cs.model.system.SysConfig"/>
+
+    <resultMap type="com.cs.model.system.SysConfig" id="SysconfigInfoResult">
+        <id column="id" property="id" />
+        <result column="sys_key" property="sysKey" />
+        <result column="sys_value" property="sysValue" />
+        <result column="description" property="description" />
+        <result column="state" property="state" />
+        <result column="version" property="version" />
+        <result column="create_time" property="createTime" />
+        <result column="edit_time" property="editTime" />
+    </resultMap>
+
+    <sql id="table_name"> sys_config_info </sql>
+
+    <sql id="Base_Column_List">
+        id, sys_key, sys_value, description,state, version, create_time, edit_time
+    </sql>
+
+    <sql id="Base_Query">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="table_name" />
+        <where>
+            <if test="id != null and id !=''">
+                and id = #{id}
+            </if>
+            <if test="sysKey != null and sysKey !=''">
+                and sys_key = #{sysKey}
+            </if>
+            <if test="state != null and state !=''">
+                and state = #{state}
+            </if>
+        </where>
+    </sql>
+
+    <insert id="add" parameterMap="SysConfigInfoParam">
+        INSERT INTO <include refid="table_name" />
+        (
+        <include refid="Base_Column_List" />
+        )VALUES(
+        #{id}, #{sysKey}, #{sysValue}, #{description},#{state}, #{version,jdbcType=BIGINT},
+        #{createTime,jdbcType=TIMESTAMP}, #{editTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <select id="getById" parameterType="string" resultMap="SysconfigInfoResult">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM
+        <include refid="table_name" />
+        <where>
+            <if test="_parameter != null and _parameter !=''">
+                and id = #{_parameter,jdbcType=VARCHAR}
+            </if>
+        </where>
+    </select>
+
+    <select id="loadAll" parameterMap="SysConfigInfoParam" resultMap="SysconfigInfoResult">
+        <include refid="Base_Query" />
+    </select>
+
+    <select id="query" parameterMap="SysConfigInfoParam" resultMap="SysconfigInfoResult">
+        <include refid="Base_Query" />
+    </select>
+
+    <update id="updateById" parameterMap="SysConfigInfoParam">
+        UPDATE <include refid="table_name" />
+        <set>
+            <if test="sysKey != null and sysKey !=''">
+                sys_key = #{sysKey},
+            </if>
+            <if test="sysValue != null and sysValue !=''">
+                sys_value = #{sysValue},
+            </if>
+            <if test="description != null and description !=''">
+                description = #{description},
+            </if>
+            state = #{state},
+            edit_time = now()
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <select id="querySystemConfigList" resultMap="SysconfigInfoResult" parameterType="java.util.Map">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM <include refid="table_name"/>
+        <include refid="WHERE_CONFIG_CONDITION"/>
+        <if test="sortBy == null or sortBy == ''">
+            ORDER BY create_time desc ,edit_time desc
+        </if>
+    </select>
+
+    <sql id="WHERE_CONFIG_CONDITION">
+        <where>
+            1=1
+            <if test="sysKey != null and sysKey != ''">
+                AND sys_key LIKE CONCAT('%', #{sysKey,jdbcType=VARCHAR}, '%')
+            </if>
+            <if test="sysValue != null and sysValue != ''">
+                AND sys_value LIKE CONCAT('%', #{sysValue,jdbcType=VARCHAR}, '%')
+            </if>
+            <if test="state != null and state != ''">
+                AND state = #{state,jdbcType=TINYINT}
+            </if>
+        </where>
+    </sql>
+
+    <delete id="deleteById" parameterType="string">
+        DELETE FROM <include refid="table_name" /> WHERE id = #{_parameter,jdbcType=VARCHAR}
+    </delete>
+</mapper>

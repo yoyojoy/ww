@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--配置数据源 -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+           
+	<!-- 数据源参数 -->
+	<bean id="propertyConfigurer" 	class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:config/system.properties</value>
+				<value>classpath:config/datasource.properties</value>
+				<value>classpath:config/redis.properties</value>
+			</list>
+		</property>
+	</bean>
+</beans>
